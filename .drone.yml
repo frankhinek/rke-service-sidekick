@@ -1,0 +1,12 @@
+---
+pipeline:
+  publish-rke-service-sidekick:
+    image: plugins/docker
+    dockerfile: package/Dockerfile
+    repo: rancher/rke-service-sidekick
+    context: package/
+    tag: ${DRONE_TAG}
+    secrets: [docker_username, docker_password]
+    when:
+      branch: master
+      event: tag
