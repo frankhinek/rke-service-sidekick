@@ -14,7 +14,7 @@ set_azure_config() {
   local azure_tenant_id=$(cat "$AZURE_CLOUD_CONFIG_PATH" | jq -r .tenantId)
 
   # setting correct login cloud
-  if [ "${azure_cloud}" == "null" ]; then
+  if [ "${azure_cloud}" == "null" ] || [ "${azure_cloud}" == "" ]; then
       azure_cloud="AzureCloud"
   fi
   az cloud set --name ${azure_cloud}
@@ -29,6 +29,9 @@ set_azure_config() {
 
   az logout 2>&1 > /dev/null
 
+if [ -z "$az_subscription_id" ] || [ -z "$az_location" ] || [ -z "$az_resources_group" ] || [ -z "$az_vnet_resource_group" ] || [ -z "$az_subnet_name" ] || [ -z "$az_vnet_name" ]; then
+  echo "Some variables were not populated correctly, using the passed config!"
+else
   cat "$AZURE_CLOUD_CONFIG_PATH" |\
   jq '.subscriptionId=''"'${az_subscription_id}'"''' |\
   jq '.location=''"'${az_location}'"''' |\
@@ -37,4 +40,5 @@ set_azure_config() {
   jq '.subnetName=''"'${az_subnet_name}'"''' |\
   jq '.useInstanceMetadata=true' |\
   jq '.vnetName=''"'${az_vnet_name}'"''' | tee $AZURE_CLOUD_CONFIG_PATH
+fi
 }
