@@ -23,6 +23,11 @@ if [ "$1" == "kubelet" ]; then
         rm -rf  /sys/fs/cgroup/cpuacct,cpu
         ln -s /sys/fs/cgroup/cpu,cpuacct /sys/fs/cgroup/cpuacct,cpu 2>/dev/null || true
     fi
+    if ! [ /sys/fs/cgroup/net_cls,net_prio -ef /sys/fs/cgroup/net_prio,net_cls ]
+    then
+        rm -rf  /sys/fs/cgroup/net_prio,net_cls
+        ln -s /sys/fs/cgroup/net_cls,net_prio /sys/fs/cgroup/net_prio,net_cls 2>/dev/null || true
+    fi
     for i in /sys/fs/cgroup/*; do
         if [ -d $i ]; then
              mkdir -p $i/kubepods
